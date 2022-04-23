@@ -32,22 +32,31 @@ public class PhoneBook {
     }
 
     public String getContactByPhone(String phone) {
-        if (map.containsKey(phone)) {
-            return map.get(phone ) + " - " +  phone;
+        if (map.containsValue(phone)) {
+            return map.get(phone) + " - " +  phone;
         } else {
             return "";
         }
     }
 
     public Set<String> getContactByName(String name) {
-        Set<String> contactName = new TreeSet<>();
+        Set<String> namePhone = new TreeSet<>();
+        if (map.containsKey(name)){
+            for (Map.Entry<String,Set<String>> entry : map.entrySet()){
+                if(entry.getValue().equals(name)){
+                   namePhone.add(name);
+                }
+            }
+        }
         return new TreeSet<>();
+
     }
 
     public Set<String> getAllContacts() {
         Set<String> keysAndValues = new TreeSet<>();
         for (Map.Entry<String,Set<String>> entry : map.entrySet()) {
-            keysAndValues.add(entry.getKey() + " - " + entry.getValue());
+            String result = entry.getKey() + " - " + entry.getValue();
+            keysAndValues.add(result.replaceAll("[\\[\\]]",""));
         }
         return keysAndValues;
     }
