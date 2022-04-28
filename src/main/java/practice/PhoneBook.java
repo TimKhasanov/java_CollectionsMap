@@ -5,11 +5,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PhoneBook {
-    private Map<String, Set<String>> map = new TreeMap<>();
-    private String regexPhone = "\\d{11}";
-    private String regexName = "^[a-zA-Zа-яА-Я]+$";
-    private Pattern patternPhone = Pattern.compile(regexPhone);
-    private Pattern patternName = Pattern.compile(regexName);
+    private final Map<String, Set<String>> map = new TreeMap<>();
+    private final String regexPhone = "\\d{11}";
+    private final String regexName = "[a-zA-Zа-яА-Я]+";
+    private final Pattern patternPhone = Pattern.compile(regexPhone);
+    private final Pattern patternName = Pattern.compile(regexName);
+
 
     public boolean isPhone(String phone) {
         Matcher matcherPhone = patternPhone.matcher(phone);
@@ -22,24 +23,40 @@ public class PhoneBook {
     }
 
     public void addContact(String phone, String name) {
-        if (isPhone(phone) && isName(name)) {
-            if (map.containsKey(name)) {
-                map.replace(phone, map.get(name), Collections.singleton(name));
-
-            } else {
-                map.put(phone, Collections.singleton(name));
+        if (!isName(name) || !isPhone(phone))
+            return;
+        for (Map.Entry<String, Set<String>> entry : map.entrySet()) {
+            String key = entry.getKey();
+            Set<String> value = entry.getValue();
+            if (value.contains(phone)) {
+                if (key.equals(name))
+                    return;
+                value.remove(phone);
+                if (value.isEmpty()) {
+                    map.remove(key);
+                }
+                break;
             }
         }
+        Set<String> phones;
+        if (map.containsKey(name)) {
+            phones = map.get(name);
+        } else {
+            phones = new TreeSet<>();
+        }
+        phones.add(phone);
+        map.put(name, phones);
     }
 
+
     public String getContactByPhone(String phone) {
-        Set<String> name = map.get(phone);
-        if (name != null) {
-            String s = name + " - " + phone;
-            return s.replaceAll("[\\[\\]]", "");
-        } else {
-            return "";
+        if (phone != null) {
+            for (Map.Entry<String, Set<String>> entry : map.entrySet()) {
+                String result = entry.getKey() + " - " + entry.getValue();
+                return result.replaceAll("[\\[\\]]", "");
+            }
         }
+        return "";
     }
 
     public Set<String> getContactByName(String name) {
@@ -55,9 +72,11 @@ public class PhoneBook {
     public Set<String> getAllContacts() {
         Set<String> keysAndValues = new TreeSet<>();
         for (Map.Entry<String, Set<String>> entry : map.entrySet()) {
-            String result = entry.getValue() + " - " + entry.getKey();
+            String result = entry.getKey() + " - " + entry.getValue();
             keysAndValues.add(result.replaceAll("[\\[\\]]", ""));
         }
         return keysAndValues;
     }
 }
+
+
