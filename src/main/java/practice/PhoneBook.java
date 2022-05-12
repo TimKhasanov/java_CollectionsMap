@@ -23,8 +23,7 @@ public class PhoneBook {
     }
 
     public void addContact(String phone, String name) {
-        if (!isName(name) || !isPhone(phone))
-            return;
+        if (!isName(name) || !isPhone(phone)) return;
         for (Map.Entry<String, Set<String>> entry : map.entrySet()) {
             String key = entry.getKey();
             Set<String> value = entry.getValue();
